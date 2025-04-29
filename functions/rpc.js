@@ -36,14 +36,8 @@ module.exports = async function generateRemarks(req, res) {
       coscholasticGradesStr += `${grade}: ${coscholasticGrades[grade]}\n`;
     }
 
-    const message = `${termPrompts[term]}\n\nSubject Marks:\n${subjectMarksStr}\nCo-Scholastic Grades:\n${coscholasticGradesStr}\nDo not include any conversational or explanatory lines like “Here is the summary...” or “Here are the remarks”. Generate a formal paragraph of no more than 150 words providing constructive remarks for a student's performance.
-
-Avoid phrases like "here is", "these are", or "you should". Do not narrate what you're about to say — just write the remark.
-
-Group feedback into:
-- Scholastic: key subjects like English, Math, Science, etc.
-- Co-scholastic: activities and life skills
-Keep it objective, professional, and free of conversational or chatbot tone.`;
+    const message = `${termPrompts[term]}\n\nSubject Marks:\n${subjectMarksStr}\nCo-Scholastic Grades:\n${coscholasticGradesStr}\nWrite a formal 150-word remark for a report card. Avoid any chatbot language such as questions, suggestions like "would you like help...", or filler phrases like "here is...". Do not use second person ("you"). Write from a teacher’s voice, summarizing strengths, areas to improve, and goals for the next exam. End the paragraph professionally without a call to action.
+`;
 
     const response = await fetch('https://api.cohere.ai/v1/generate', {
       method: 'POST',
