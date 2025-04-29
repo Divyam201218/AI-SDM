@@ -11,7 +11,7 @@ app.use(cors({ origin: 'https://sdm-connect-2.netlify.app' }));
 
 // Routes
 app.post('/generate-lesson', function1);
-app.post('/summarize-chapter', function2);
+app.post('/rpc', function2);
 
 app.get('/health-check', (req, res) => res.send('OK'));
 
