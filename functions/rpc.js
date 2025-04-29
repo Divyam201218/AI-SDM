@@ -19,11 +19,51 @@ module.exports = async function generateRemarks(req, res) {
     }
 
     const termPrompts = {
-      pt1: `These are the student's PT1 (1st unit test) marks and co-scholastic grades. Suggest improvements for Half-Yearly term. The maximum marks for PT1 are 25 and for half-yearly, they are 60. Just write a maximum of 150 words. Also, 3rd language is Sanskrit.`,
-      halfYearly: `These are the student's marks for PT1 (1st unit test) and Half-Yearly. Suggest improvements for PT2 (2nd unit test). The maximum marks for PT1 are 25, for half-yearly, they are 60 and for PT2 they are 25. Just write a maximum of 150 words. Also, 3rd language is Sanskrit.`,
-      pt2: `These are the student's marks for PT1 (1st unit test), PT2 (2nd unit test), and Half-Yearly. Suggest improvements for Annual. The maximum marks for PT1 are 25, for half-yearly, they are 60, for PT2 they are 25 and for annuals they are 60. Just write a maximum of 150 words. Also, 3rd language is Sanskrit.`,
-      annual: `These are the student's marks for all terms (PT1: 1st unit test, half-yearly, PT2: 2nd unit test and annuals). Predict performance for the next academic year (Write Remarks for the student). The maximum marks for PT1 are 25, for half-yearly, they are 60, for PT2 they are 25 and for annuals they are 60. Just write a maximum of 150 words. Also, 3rd language is Sanskrit.`
-    };
+  pt1: `You are a teacher writing a formal progress remark for a student, based on their PT1 marks and co-scholastic grades.
+
+Your goal is to write a concise, professional remark (max 150 words) summarizing:
+
+- Strong subjects (e.g., high PT1 marks)
+- Subjects that need attention (e.g., low PT1 marks)
+- Any co-scholastic areas of strength or concern
+- A concluding line on focus for the Half-Yearly exam
+
+Use third-person (e.g., "The student shows...") and avoid chatbot phrases like "Here is", "You should", or any questions. Do not mention this is based on AI or a system. End the remark professionally, not conversationally.
+
+Assume the third language is Sanskrit.`,
+  
+  halfYearly: `You are a teacher writing a formal progress remark for a student, based on PT1 and Half-Yearly marks, and co-scholastic grades.
+
+Write a short, formal remark (~150 words) that:
+
+- Highlights improvements since PT1
+- Mentions subjects of strength or concern
+- Reflects co-scholastic grades and any behavioral notes
+- Encourages focus for PT2
+
+Write in third-person, no chatbot tone or generic filler. Avoid "you should" or "here is." Make it suitable for a printed report card.`,
+  
+  pt2: `You are a teacher writing a report card remark for a student, based on PT1, PT2, and Half-Yearly marks, and co-scholastic grades.
+
+Summarize in ~150 words:
+
+- Academic growth or patterns
+- Strong and weak subjects
+- Co-scholastic strengths and areas to work on
+- What the student should aim for in the Annual exam
+
+Write professionally, from a teacher’s voice, not conversationally. Avoid "you", "would you like", or informal advice. The remark should end cleanly without follow-up questions.`,
+  
+  annual: `Write a final year-end remark for a student's report card based on PT1, PT2, Half-Yearly, and Annual marks along with co-scholastic grades.
+
+- Summarize the student’s performance and progress throughout the year
+- Point out academic consistency or fluctuations
+- Acknowledge co-scholastic achievements or challenges
+- Predict readiness for the next academic year
+
+Keep the tone formal, in third person, max 150 words. Avoid chatbot tone or casual phrases. End with a confident summary, not open-ended suggestions.`
+};
+
 
     let subjectMarksStr = '';
     for (const subject in marks) {
@@ -36,8 +76,7 @@ module.exports = async function generateRemarks(req, res) {
       coscholasticGradesStr += `${grade}: ${coscholasticGrades[grade]}\n`;
     }
 
-    const message = `${termPrompts[term]}\n\nSubject Marks:\n${subjectMarksStr}\nCo-Scholastic Grades:\n${coscholasticGradesStr}\nWrite a formal 150-word remark for a report card. Avoid any chatbot language such as questions, suggestions like "would you like help...", or filler phrases like "here is...". Do not use second person ("you"). Write from a teacher’s voice, summarizing strengths, areas to improve, and goals for the next exam. End the paragraph professionally without a call to action.
-`;
+    const message = `${termPrompts[term]}\n\nSubject Marks:\n${subjectMarksStr}\nCo-Scholastic Grades:\n${coscholasticGradesStr}`;
 
     const response = await fetch('https://api.cohere.ai/v1/generate', {
       method: 'POST',
