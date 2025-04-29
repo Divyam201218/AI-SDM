@@ -9,19 +9,23 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const message = `
-    You are an experienced teacher creating a detailed lesson plan.
+const message = `
+Create a formal, structured lesson plan only.
 
-- **Board:** ${board}
-- **Class:** ${classNumber}
-- **Subject:** ${subject}
-- **Chapter:** ${chapter}
+- Board: ${board}
+- Class: ${classNumber}
+- Subject: ${subject}
+- Chapter: ${chapter}
 
-Teacher's Special Instructions:
+Teacher's Instructions:
 ${prompt}
 
-Make sure the lesson plan is well-structured, includes objectives, introduction, activities, assessment questions, and homework tasks.
-Use clear headings and bullet points.`; // your existing prompt content here
+Do not include any conversational or explanatory lines like “Here is a lesson plan...” or “In this lesson, we will...”
+Use only formal lesson plan formatting with clear headings (like "Objectives", "Activities", etc.) and bullet points.
+
+Your output will be shown to students and teachers directly, so it must look like an official document.
+`;
+ // your existing prompt content here
 
     const response = await fetch('https://api.cohere.ai/v1/generate', {
       method: 'POST',
