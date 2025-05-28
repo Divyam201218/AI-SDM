@@ -32,7 +32,7 @@ Use only formal lesson plan formatting with clear headings (like "Objectives", "
 Your output will be shown to students and teachers directly, so it must look like an official document.
 `;
 
-    const geminiUrl = https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey};
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
     const requestBody = {
       contents: [
@@ -53,7 +53,7 @@ Your output will be shown to students and teachers directly, so it must look lik
     const rawText = await response.text();
 
     if (!response.ok) {
-      throw new Error(Gemini API error: ${response.status} ${response.statusText} - ${rawText});
+      throw new Error(`Gemini API error: ${response.status} ${response.statusText} - ${rawText}`);
     }
 
     const data = JSON.parse(rawText);
