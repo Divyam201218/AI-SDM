@@ -1,15 +1,21 @@
 const fetch = require('node-fetch');
 
+const allowedOrigin = 'https://sdm-connect-2.netlify.app';
+
 module.exports = async (req, res) => {
   try {
     const { board, classNumber, subject, chapter, prompt } = req.body;
-    const apiKey = process.env.COHERE_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    if (!apiKey) {
+      throw new Error('Missing GEMINI_API_KEY environment variable');
+    }
 
     if (!board || !classNumber || !subject || !chapter || !prompt) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-const message = `
+    const message = `
 Create a formal, structured lesson plan only.
 
 - Board: ${board}
@@ -25,35 +31,46 @@ Use only formal lesson plan formatting with clear headings (like "Objectives", "
 
 Your output will be shown to students and teachers directly, so it must look like an official document.
 `;
- // your existing prompt content here
 
-    const response = await fetch('https://api.cohere.ai/v1/generate', {
+    const geminiUrl = https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey};
+
+    const requestBody = {
+      contents: [
+        {
+          parts: [{ text: message }]
+        }
+      ]
+    };
+
+    const response = await fetch(geminiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'command',
-        prompt: message,
-        max_tokens: 1000,
-        temperature: 0.3,
-        k: 0,
-        stop_sequences: [],
-        return_likelihoods: "NONE"
-      }),
+      body: JSON.stringify(requestBody),
     });
 
-    const data = await response.json();
-    const text = data?.generations?.[0]?.text;
+    const rawText = await response.text();
 
-    if (!text) {
-      return res.status(500).json({ error: 'Invalid response from Cohere' });
+    if (!response.ok) {
+      throw new Error(Gemini API error: ${response.status} ${response.statusText} - ${rawText});
     }
 
-    res.json({ processedLessonPlan: text });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message || 'Server error' });
+    const data = JSON.parse(rawText);
+
+    let lessonPlan = 'No output from Gemini';
+    if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      lessonPlan = data.candidates[0].content.parts[0].text;
+    }
+
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.status(200).json({ processedLessonPlan: lessonPlan });
+
+  } catch (error) {
+    console.error("=== Gemini Lesson Plan Error ===", error.stack || error.message);
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.status(500).json({ error: error.message || 'Server error' });
   }
 };
