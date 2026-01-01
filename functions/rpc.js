@@ -94,7 +94,7 @@ Keep the tone formal, in third person, max 150 words. Avoid chatbot tone or casu
 
     const fullPrompt = `${termPrompts[term]}\n\nSubject Marks:\n${subjectMarksStr}\nCo-Scholastic Grades:\n${coscholasticGradesStr}`;
 
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     const requestBody = {
       contents: [
